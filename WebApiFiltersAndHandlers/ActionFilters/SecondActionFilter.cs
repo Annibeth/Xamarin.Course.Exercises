@@ -13,13 +13,7 @@ namespace WebApiFiltersAndHandlers.ActionFilters
 {
     public class SecondActionFilter : IActionFilter
     {
-        public bool AllowMultiple
-        {
-            get
-            {
-                return false;
-            }
-        }
+        public bool AllowMultiple { get { return false; } }
 
         public async Task<HttpResponseMessage> ExecuteActionFilterAsync(
             HttpActionContext actionContext,
