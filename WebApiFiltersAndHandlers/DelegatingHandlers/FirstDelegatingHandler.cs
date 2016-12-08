@@ -2,27 +2,42 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http.Results;
 
 namespace WebApiFiltersAndHandlers.DelegatingHandlers
 {
     public class FirstDelegatingHandler : DelegatingHandler
     {
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override async Task<HttpResponseMessage>
+            SendAsync(HttpRequestMessage request,
+            CancellationToken cancellationToken)
         {
-            // 1. Stuff you do here happens before request reaches controller - and filters
-            Debug.WriteLine("First delegating handler - before filters and controller");
+            HttpResponseMessage response = null;
 
-            // 2. Call the next link in the chain
-            var response = await base.SendAsync(request, cancellationToken);
+            if (request.Headers.Any(h => h.Key == "X-Version"))
+            {
+                var versionHeader = request.Headers.First(h => h.Key == "X-Version");
+                var version = versionHeader.Value.FirstOrDefault();
 
-            // 3. Stuff you do here happens after request reaches controller - and filters
-            Debug.WriteLine("First delegating handler - after filters and controller");
+                if (version != null && version == "42")
+                {
+                    response = await base.SendAsync(request, cancellationToken);
+                }
 
-            // 4. Return a response to client
+            }
+
+
+            if (response == null)
+            {
+                var result = new StatusCodeResult((HttpStatusCode)418, request);
+                response = await result.ExecuteAsync(cancellationToken);
+            }
+
             return response;
         }
     }

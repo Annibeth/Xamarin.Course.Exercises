@@ -16,8 +16,7 @@ namespace WebApiFiltersAndHandlers
             // Web API configuration and services
 
             // Register the global exception handler
-            config.Services.Replace(typeof(IExceptionHandler),
-                new GlobalExceptionHandler());
+            config.Services.Replace(typeof(IExceptionHandler), new GlobalExceptionHandler());
 
             // Register delegating handlers
             config.MessageHandlers.Add(new FirstDelegatingHandler());
